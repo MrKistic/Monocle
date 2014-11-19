@@ -472,6 +472,7 @@ Monocle.Reader = function (node, bookData, options, onLoadCallback) {
   }
 
 
+  /* MrKistic */
   function hideControl(ctrl) {
     var controlData = dataForControl(ctrl);
     if (!controlData) {
@@ -482,11 +483,15 @@ Monocle.Reader = function (node, bookData, options, onLoadCallback) {
       return;
     }
     for (var i = 0; i < controlData.elements.length; ++i) {
-      controlData.elements[i].style.display = "none";
+      if (ctrl.animate) {
+        ctrl.animate('hide');
+      } else {
+        controlData.elements[i].style.display = "none";
+      }
     }
     if (controlData.usesOverlay) {
       var overlay = dom.find('overlay');
-      overlay.style.display = "none";
+      if (!ctrl.animate) overlay.style.display = "none";
       Monocle.Events.deafenForContact(overlay, overlay.listeners);
       if (controlData.controlType != 'hud') {
         dispatchEvent('monocle:modal:off');
@@ -548,7 +553,6 @@ Monocle.Reader = function (node, bookData, options, onLoadCallback) {
     dispatchEvent('monocle:controlshow', { control: ctrl }, false);
     return true;
   }
-
 
   function showingControl(ctrl) {
     var controlData = dataForControl(ctrl);
