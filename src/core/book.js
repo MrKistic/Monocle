@@ -100,7 +100,7 @@ Monocle.Book = function (dataSource, preloadWindow) {
     var result = { load: false, componentId: locus.componentId, page: 1 }
 
     // Get the current last page.
-    lastPageNum = component.lastPageNumber();
+    var lastPageNum = component.lastPageNumber();
 
     // Deduce the page number for the given locus.
     if (typeof(locus.page) == "number") {
@@ -134,7 +134,7 @@ Monocle.Book = function (dataSource, preloadWindow) {
     }
 
     if (result.page < 1) {
-      if (cIndex == 0) {
+      if (cIndex === 0) {
         // On first page of book.
         result.page = 1;
         result.boundarystart = true;
@@ -182,7 +182,7 @@ Monocle.Book = function (dataSource, preloadWindow) {
         pageDiv.m.place = pageDiv.m.place || new Monocle.Place();
         pageDiv.m.place.setPlace(component, locus.page);
 
-        var evtData = {
+        evtData = {
           page: pageDiv,
           locus: locus,
           pageNumber: pageDiv.m.place.pageNumber(),

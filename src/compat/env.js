@@ -53,7 +53,7 @@ Monocle.Env = function () {
     Monocle.defer(removeTestFrame);
 
     if (typeof surveyCallback == "function") {
-      fn = surveyCallback;
+      var fn = surveyCallback;
       surveyCallback = null;
       fn(API);
     }
@@ -251,27 +251,28 @@ Monocle.Env = function () {
     ["supportsLocalStorage", function () {
       // NB: Some duplicitous early Android browsers claim to have
       // localStorage, but calls to getItem() fail.
-      result(
-        typeof window.localStorage != "undefined" &&
-        typeof window.localStorage.getItem == "function"
-      )
+      try {
+        result(
+          typeof window.localStorage != "undefined" &&
+          typeof window.localStorage.getItem == "function"
+        )
+      } catch (e) {
+        result(false);
+      }
     }],
 
 
     // CHECK OUT OUR CONTEXT
 
     // Does the device have a MobileSafari-style touch interface?
+    // (Here we can now simply follow the wisdom of Gala.)
     //
-    ["touch", function () {
-      result(
-        ('ontouchstart' in window) ||
-        css.supportsMediaQueryProperty('touch-enabled')
-      );
-    }],
+    ["touch", function () { result(Gala.Pointers.ENV.noMouse); }],
+
 
     // Is the Reader embedded, or in the top-level window?
     //
-    ["embedded", function () { result(top != self) }],
+    ["embedded", function () { result(top != window.self) }],
 
 
     // TEST FOR CERTAIN RENDERING OR INTERACTION BUGS
@@ -291,10 +292,11 @@ Monocle.Env = function () {
     //
     ["floatsIgnoreColumns", function () {
       if (!Monocle.Browser.is.WebKit) { return result(false); }
-      match = navigator.userAgent.match(/AppleWebKit\/([\d\.]+)/);
+      var match = navigator.userAgent.match(/AppleWebKit\/([\d\.]+)/);
       if (!match) { return result(false); }
       return result(match[1] < "534.30");
     }],
+
 
     // The latest engines all agree that if a body is translated leftwards,
     // its scrollWidth is shortened. But some older WebKits (notably iOS4)
@@ -413,16 +415,6 @@ Monocle.Env = function () {
     }],
 
 
-    // Chrome and Firefox incorrectly clip text when the dimensions of
-    // a page are not an integer. IE10 clips text when the page dimensions
-    // are rounded.
-    //
-    ['roundPageDimensions', function () {
-      result(!Monocle.Browser.is.IE);
-    }],
-
-
-
     // In IE10, the <html> element of the iframe's document has scrollbars,
     // unless you set its style.overflow to 'hidden'.
     //
@@ -445,7 +437,6 @@ Monocle.Env = function () {
     ['loadHTMLWithDocWrite', function () {
       result(Monocle.Browser.is.Gecko || Monocle.Browser.is.Opera);
     }]
-
   ];
 
 
